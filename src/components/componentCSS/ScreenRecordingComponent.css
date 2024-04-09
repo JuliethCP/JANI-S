@@ -1,0 +1,48 @@
+.ScreenRecordingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+h2{
+  color: #000000;
+}
+
+.VideoPreview {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.ButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  color: #000;
+}
+
+.Button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.Button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.Button:hover {
+  background-color: #0056b3;
+}
