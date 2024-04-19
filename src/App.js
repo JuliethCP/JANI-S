@@ -1,17 +1,16 @@
 import { useEffect, useRef } from "react";
 import { useExternalScript } from "./helpers/ai-sdk/externalScriptsLoader";
 import { getAiSdkControls } from "./helpers/ai-sdk/loader";
-
 import './App.css';
-
 import GenderComponent from "./components/GenderComponent";
 import AgeComponent from "./components/AgeComponent";
 import DominantEmotionComponent from "./components/DominantEmotionComponent";
 import FeatureComponent from "./components/FeatureComponent";
 import EngagementComponent from "./components/EngagementComponent";
 import FaceTrackerComponent from "./components/FaceTrackerComponent";
-import MoodComponent from "./components/MoodComponent";
+//import MoodComponent from "./components/MoodComponent";
 import EmotionBarsComponent from "./components/EmotionBarsComponent";
+import Dictaphone from "./components/Dictaphone";
 
 function App() {
 
@@ -39,6 +38,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div style={{display:"flex", flexDirection: "column", alignItems:"center"}}>
+          <Dictaphone></Dictaphone>
           <div style={{width:"640px", height: "480px", position:"relative"}}>
             <video id="videoEl"></video>
             <FaceTrackerComponent videoEl={videoEl}></FaceTrackerComponent>
@@ -52,8 +52,9 @@ function App() {
           <FeatureComponent></FeatureComponent>
           <hr className="solid" style={{width:"100%"}}></hr>
           <EngagementComponent></EngagementComponent>
-          <hr className="solid" style={{width:"100%"}}></hr>
-          <MoodComponent></MoodComponent>
+          {/** <hr className="solid" style={{width:"100%"}}></hr>
+          <MoodComponent></MoodComponent> */}
+         
           <hr className="solid" style={{width:"100%"}}></hr>
           <EmotionBarsComponent></EmotionBarsComponent>
           <hr className="solid" style={{width:"100%"}}></hr>
