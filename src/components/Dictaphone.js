@@ -27,9 +27,17 @@ const Dictaphone = () => {
     };
   
     for (let i = 0; i < words.length; i++) {
-      if (words[i] === 'house' && !isNaN(parseInt(words[i + 1]))) {
-        variableName = 'sqft_living'; 
-        variableValue = parseInt(words[i + 1]); 
+      if (words[i] === 'house' && i + 6 < words.length) {
+        variableName = 'house'; 
+        variableValue = {
+            "taxvaluedollarcnt": parseFloat(words[i + 3]), 
+            "taxamount": parseFloat(words[i + 6])
+        };
+        break;
+      }
+      if (words[i] === 'delay' && i + 1 < words.length) {
+        variableName = 'delay'; 
+        variableValue = parseInt(words[i + 1]);
         break;
       }
       if (words[i] === 'bitcoin' && i + 3 < words.length) {
@@ -85,7 +93,11 @@ const Dictaphone = () => {
         });
         const roundedResponse = parseFloat(response.data.prediction).toFixed(4);
         console.log('Response:', response.data.prediction);
-        setResponseText(`La predicción de ${variable_name} con los datos ${variable_value} es ${roundedResponse}`);
+        if (variable_name === 'house') {
+          setResponseText(`La predicción de ${variable_name} con los datos TaxValueDollarCnt: ${variable_value.taxvaluedollarcnt}, TaxAmount: ${variable_value.taxamount} es ${roundedResponse}`);
+        } else {
+          setResponseText(`La predicción de ${variable_name} con los datos ${variable_value} es ${roundedResponse}`);
+        }
       } catch (error) {
         console.error('Error:', error);
       }
