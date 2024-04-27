@@ -1,6 +1,8 @@
-import {React, useState} from 'react';
+import { React, useState } from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import axios from 'axios';
+import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
+import './componentCSS/Recorder.css';
 
 const Dictaphone = () => {
   const [responseText, setResponseText] = useState('');
@@ -19,24 +21,24 @@ const Dictaphone = () => {
     const words = transcription.toLowerCase().split(' ');
     let variableName = '';
     let variableValue = '';
-  
+
     // Función para convertir el nombre del mes de formato texto a formato numérico
     const getMonthNumber = (monthWord) => {
       const monthNames = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
       return monthNames.indexOf(monthWord.toLowerCase()) + 1; // Sumar 1 para obtener el mes en formato numérico
     };
-  
+
     for (let i = 0; i < words.length; i++) {
       if (words[i] === 'house' && i + 6 < words.length) {
-        variableName = 'house'; 
+        variableName = 'house';
         variableValue = {
-            "taxvaluedollarcnt": parseFloat(words[i + 3]), 
-            "taxamount": parseFloat(words[i + 6])
+          "taxvaluedollarcnt": parseFloat(words[i + 3]),
+          "taxamount": parseFloat(words[i + 6])
         };
         break;
       }
       if (words[i] === 'delay' && i + 1 < words.length) {
-        variableName = 'delay'; 
+        variableName = 'delay';
         variableValue = parseInt(words[i + 1]);
         break;
       }
@@ -44,7 +46,7 @@ const Dictaphone = () => {
         const year = parseInt(words[i + 1]);
         const monthWord = words[i + 2];
         const day = parseInt(words[i + 3]);
-        
+
         if (!isNaN(year) && !isNaN(day) && !isNaN(getMonthNumber(monthWord)) && !isNaN(Date.parse(`${getMonthNumber(monthWord)} ${day}, ${year}`))) {
           variableName = 'bitcoin';
           variableValue = `${year}-${getMonthNumber(monthWord)}-${day}`;
@@ -55,7 +57,7 @@ const Dictaphone = () => {
         const year = parseInt(words[i + 1]);
         const monthWord = words[i + 2];
         const day = parseInt(words[i + 3]);
-        
+
         if (!isNaN(year) && !isNaN(day) && !isNaN(getMonthNumber(monthWord)) && !isNaN(Date.parse(`${getMonthNumber(monthWord)} ${day}, ${year}`))) {
           variableName = 'avocado';
           variableValue = `${year}-${getMonthNumber(monthWord)}-${day}`;
@@ -66,7 +68,7 @@ const Dictaphone = () => {
         const year = parseInt(words[i + 1]);
         const monthWord = words[i + 2];
         const day = parseInt(words[i + 3]);
-        
+
         if (!isNaN(year) && !isNaN(day) && !isNaN(getMonthNumber(monthWord)) && !isNaN(Date.parse(`${getMonthNumber(monthWord)} ${day}, ${year}`))) {
           variableName = 'SP500Stock';
           variableValue = `${year}-${getMonthNumber(monthWord)}-${day}`;
@@ -74,17 +76,17 @@ const Dictaphone = () => {
         }
       }
     }
-  
+
     // Devolver el nombre de la variable y su valor como un objeto
     return {
       variable_name: variableName,
       variable_value: variableValue
     };
   };
-  
+
   const sendApi = async () => {
     const { variable_name, variable_value } = processTranscription(transcript);
-    
+
     if (variable_name && variable_value) {
       try {
         const response = await axios.post('http://127.0.0.1:5000/predict', {
@@ -105,7 +107,7 @@ const Dictaphone = () => {
       console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
     }
   };
-  
+
 
   if (!listening) {
     if (transcript !== '') {
@@ -119,14 +121,24 @@ const Dictaphone = () => {
   };
 
   return (
-    <div>
-      <p>Microphone: {listening ? 'on' : 'off'}</p>
-      <button onClick={SpeechRecognition.startListening}>Start</button>
-      <button onClick={SpeechRecognition.stopListening}>Stop</button>
-      <button onClick={cleanTranscription}>Reset</button>
-      <p>{transcript}</p>
-      <p>{responseText}</p>
+
+    <div className='data-microfono'>
+      {transcript && <p className="transcript">YOU: {transcript}</p>}
+      {responseText && <p className="responseText">JANI'S:  {responseText}</p>}
+
+      {listening && !transcript && <p className="transcript">YOU: [Talking...]</p>}
+      {transcript && !responseText && !listening && <p className="responseText">JANI'S: [The question could not be understood. Please try again or check the question format]</p>}
+
+      <div className="recorder-container">
+        <button className="record-button" onClick={listening ? SpeechRecognition.stopListening : SpeechRecognition.startListening}>
+          {listening ? <VscDebugPause style={{ fontSize: '24', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px' }} /> : <VscDebugStart style={{ fontSize: '24', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px' }} />}
+        </button>
+        <button className="reset-button" onClick={cleanTranscription}>
+          <VscDebugRestart style={{ fontSize: '24', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px' }} />
+        </button>
+      </div>
     </div>
+
   );
 };
 
