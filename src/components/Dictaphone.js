@@ -37,6 +37,14 @@ const Dictaphone = () => {
         };
         break;
       }
+      if (words[i] === 'auto' && i + 6 < words.length) {
+        variableName = 'auto';
+        variableValue = {
+          "Year": parseFloat(words[i + 3]),
+          "Kms_Driven": parseFloat(words[i + 6])
+        };
+        break;
+      }
       if (words[i] === 'delay' && i + 1 < words.length) {
         variableName = 'delay';
         variableValue = parseInt(words[i + 1]);
