@@ -1,11 +1,29 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import axios from 'axios';
 import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
 import './componentCSS/Recorder.css';
+import StrokeModal from "./StrokeModal";
 
 const Dictaphone = () => {
   const [responseText, setResponseText] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [gender, setGender] = useState('');
+  const [age, setAge] = useState('');
+  const [hypertension, setHypertension] = useState('');
+  const [heart_disease, setHeartDisease] = useState('');
+  const [ever_married, setMarried] = useState('');
+  const [job_type, setJob_type] = useState('');
+  const [residence_type, setResidence_type] = useState('');
+  const [avg_glucose_level, setGlucosa_level] = useState('');
+  const [bmi, setBMI] = useState('');
+  const [smoking_status, setSmoking] = useState('');
+  const [isWaitingResponse, setIsWaitingResponse] = useState(false);
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   const {
     transcript,
     listening,
@@ -13,11 +31,33 @@ const Dictaphone = () => {
     browserSupportsSpeechRecognition
   } = useSpeechRecognition();
 
+  useEffect(() => {
+    if (!listening && transcript !== '') {
+      processTranscription(transcript);
+    }
+  }, [listening, transcript]);
+
   if (!browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
   }
 
-  const processTranscription = (transcription) => {
+  const handleSaveModalData = (data) => {
+    setGender(data.gender);
+    setAge(data.age);
+    setHypertension(data.hypertension);
+    setHeartDisease(data.heart_disease);
+    setMarried(data.ever_married);
+    setJob_type(data.job_type);
+    setResidence_type(data.residence_type);
+    setGlucosa_level(data.avg_glucose_level);
+    setBMI(data.bmi);
+    setSmoking(data.smoking_status);
+    setShowModal(false);
+
+  };
+
+
+  const processTranscription = async (transcription) => {
     const words = transcription.toLowerCase().split(' ');
     let variableName = '';
     let variableValue = '';
@@ -35,6 +75,11 @@ const Dictaphone = () => {
           "taxvaluedollarcnt": parseFloat(words[i + 3]),
           "taxamount": parseFloat(words[i + 6])
         };
+        break;
+      }
+      if (words[i] === 'stroke' && i + 1 < words.length) {
+        variableName = 'stroke';
+        setShowModal(true);
         break;
       }
       if (words[i] === 'delay' && i + 1 < words.length) {
@@ -77,43 +122,78 @@ const Dictaphone = () => {
       }
     }
 
-    // Devolver el nombre de la variable y su valor como un objeto
-    return {
-      variable_name: variableName,
-      variable_value: variableValue
-    };
-  };
 
-  const sendApi = async () => {
-    const { variable_name, variable_value } = processTranscription(transcript);
-
-    if (variable_name && variable_value) {
-      try {
-        const response = await axios.post('http://127.0.0.1:5000/predict', {
-          variable_name: variable_name,
-          variable_value: variable_value
-        });
-        const roundedResponse = parseFloat(response.data.prediction).toFixed(4);
-        console.log('Response:', response.data.prediction);
-        if (variable_name === 'house') {
-          setResponseText(`La predicción de ${variable_name} con los datos TaxValueDollarCnt: ${variable_value.taxvaluedollarcnt}, TaxAmount: ${variable_value.taxamount} es ${roundedResponse}`);
-        } else {
-          setResponseText(`La predicción de ${variable_name} con los datos ${variable_value} es ${roundedResponse}`);
-        }
-      } catch (error) {
-        console.error('Error:', error);
+    if (variableName === 'stroke') {
+      if (showModal) {
+      console.log('Vaaaaaaaaaaaaariable value:', variableValue, 'Variable name:', variableName);
+      await new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (!showModal) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100); // Verificar cada 100ms si el modal está cerrado
+      });
+      variableValue = {
+        "gender": parseFloat(gender),
+        "age": parseFloat(age),
+        "hypertension": parseFloat(hypertension),
+        "heart_disease": parseFloat(heart_disease),
+        "ever_married": parseFloat(ever_married),
+        "work_type": parseFloat(job_type),
+        "Residence_type": parseFloat(residence_type),
+        "avg_glucose_level": parseFloat(avg_glucose_level),
+        "bmi": parseFloat(bmi),
+        "smoking_status": parseFloat(smoking_status)
+      };
+    
+      console.log('Variable value:', variableValue, 'Variable name:', variableName);
+    }
+    
+    if (variableName === '' || Object.keys(variableValue).length === 0) {
+        console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
+      } else {
+        setResponseText('Please wait a moment...');
+        sendApi(variableName, variableValue);
       }
     } else {
-      console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
+      if (variableName === '' || variableValue === '') {
+        console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
+      } else {
+        sendApi(variableName, variableValue);
+      }
+    }
+
+  };
+
+  const sendApi = async (variable_name, variable_value) => {
+    setResponseText('');
+
+    try {
+      setIsWaitingResponse(true);
+
+      const response = await axios.post('http://127.0.0.1:5000/predict', {
+        variable_name: variable_name,
+        variable_value: variable_value
+      });
+
+      console.log('Response:', response.data);
+      if (response.data.stroke_risk) {
+        setResponseText(`The stroke risk prediction is ${response.data.stroke_risk} with a probability of ${response.data.probability.toFixed(4)}`);
+      } else {
+        // En caso contrario, mostrar un mensaje genérico
+        const roundedResponse = parseFloat(response.data.prediction).toFixed(4);
+        if (variable_name === 'house') {
+          setResponseText(`The prediction for ${variable_name} with the data TaxValueDollarCnt: ${variable_value.taxvaluedollarcnt}, TaxAmount: ${variable_value.taxamount} is ${roundedResponse}`);
+        } else {
+          setResponseText(`The prediction for ${variable_name} with the data ${variable_value} is ${roundedResponse}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
-
-  if (!listening) {
-    if (transcript !== '') {
-      sendApi();
-    }
-  }
 
   const cleanTranscription = () => {
     resetTranscript();
@@ -121,24 +201,34 @@ const Dictaphone = () => {
   };
 
   return (
+    <>
+      <div className='data-microfono'>
+        {transcript && <p className="transcript">YOU: {transcript}</p>}
+        {responseText && <p className="responseText">JANI'S:  {responseText}</p>}
 
-    <div className='data-microfono'>
-      {transcript && <p className="transcript">YOU: {transcript}</p>}
-      {responseText && <p className="responseText">JANI'S:  {responseText}</p>}
+        {listening && !transcript && <p className="transcript">YOU: [Talking...]</p>}
+        {transcript && !responseText && !listening && <p className="responseText">JANI'S: [The question could not be understood. Please try again or check the question format]</p>}
 
-      {listening && !transcript && <p className="transcript">YOU: [Talking...]</p>}
-      {transcript && !responseText && !listening && <p className="responseText">JANI'S: [The question could not be understood. Please try again or check the question format]</p>}
-
-      <div className="recorder-container">
-        <button className="record-button" onClick={listening ? SpeechRecognition.stopListening : SpeechRecognition.startListening}>
-          {listening ? <VscDebugPause style={{ fontSize: '24', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px' }} /> : <VscDebugStart style={{ fontSize: '24', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px' }} />}
-        </button>
-        <button className="reset-button" onClick={cleanTranscription}>
-          <VscDebugRestart style={{ fontSize: '24', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px' }} />
-        </button>
+        <div className="recorder-container">
+          <button className="record-button" onClick={listening ? SpeechRecognition.stopListening : SpeechRecognition.startListening}>
+            {listening ? <VscDebugPause style={{ fontSize: '24', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px' }} /> : <VscDebugStart style={{ fontSize: '24', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px' }} />}
+          </button>
+          <button className="reset-button" onClick={cleanTranscription}>
+            <VscDebugRestart style={{ fontSize: '24', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px' }} />
+          </button>
+        </div>
       </div>
-    </div>
 
+
+      {showModal && (
+        <StrokeModal
+          onSave={handleSaveModalData}
+          onClose={() => setShowModal(false)}
+          onHide={handleCloseModal}
+        />
+      )}
+
+    </>
   );
 };
 

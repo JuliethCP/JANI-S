@@ -193,6 +193,7 @@ function App() {
                   top: '0',
                   right: '0'
                 }}></video>
+                 
               </div>
             </Container>
 
@@ -204,9 +205,10 @@ function App() {
               boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
               maxWidth: '430px',
               marginRight: '0', // Añadido para alinear a la derecha
-            }}>
+            }}>   
               <AgeComponent />
               <EmotionBarsComponent />
+             
 
             </Container>
 
