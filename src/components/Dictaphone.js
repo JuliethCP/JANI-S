@@ -45,6 +45,22 @@ const Dictaphone = () => {
         };
         break;
       }
+      if (words[i] === 'crimes' && i + 6 < words.length) {
+        variableName = 'crimes';
+        variableValue = {
+          "year": parseFloat(words[i + 3]),
+          "month": parseFloat(words[i + 6])
+        };
+        break;
+      }
+      if (words[i] === 'covid' && i + 6 < words.length) {
+        variableName = 'covid';
+        variableValue = {
+          "Confirmed": parseFloat(words[i + 3]),
+          "Deaths": parseFloat(words[i + 6])
+        };
+        break;
+      }
       if (words[i] === 'delay' && i + 1 < words.length) {
         variableName = 'delay';
         variableValue = parseInt(words[i + 1]);
