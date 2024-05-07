@@ -75,15 +75,13 @@ const FaceTrackerComponent = (props) => {
 
 
 
-
-
-
-
     return (
         <>
-            <div id="faceTrackerContainer">
-            </div>
+        <div id="faceTrackerContainer">
+            <div id="faceTracker"></div>
+        </div>
         </>
+        
 
     );
 };
