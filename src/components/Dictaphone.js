@@ -4,10 +4,12 @@ import axios from 'axios';
 import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
 import './componentCSS/Recorder.css';
 import StrokeModal from "./StrokeModal";
+import CompanyModal from './CompanyModal';
 
 const Dictaphone = () => {
   const [responseText, setResponseText] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
   const [gender, setGender] = useState('');
   const [age, setAge] = useState('');
   const [hypertension, setHypertension] = useState('');
@@ -19,10 +21,20 @@ const Dictaphone = () => {
   const [bmi, setBMI] = useState('');
   const [smoking_status, setSmoking] = useState('');
   const [isWaitingResponse, setIsWaitingResponse] = useState(false);
+  const [tenure, setTenure] = useState('');
+  const [monthlyCharges, setMonthlyCharges] = useState('');
+  const [contract, setContract] = useState('');
+  const [internetService, setInternetService] = useState('');
+  const [techSupport, setTechSupport] = useState('');
 
   const handleCloseModal = () => {
     setShowModal(false);
   };
+
+  const handleCloseModal2 = () => {
+    setShowModal(false);
+  };
+
 
   const {
     transcript,
@@ -55,6 +67,15 @@ const Dictaphone = () => {
     setShowModal(false);
 
   };
+  const handleSaveModalData2 = (data) => {
+    setTenure(data.tenure);
+    setMonthlyCharges(data.monthlyCharges);
+    setContract(data.contract);
+    setInternetService(data.internetService);
+    setTechSupport(data.techSupport);
+    setShowModal(false);
+};
+
 
 
   const processTranscription = async (transcription) => {
@@ -104,6 +125,11 @@ const Dictaphone = () => {
       if (words[i] === 'stroke' && i + 1 < words.length) {
         variableName = 'stroke';
         setShowModal(true);
+        break;
+      }
+      if (words[i] === 'company' && i + 1 < words.length) {
+        variableName = 'company';
+        setShowModal2(true);
         break;
       }
       if (words[i] === 'delay' && i + 1 < words.length) {
@@ -249,6 +275,14 @@ const Dictaphone = () => {
           onSave={handleSaveModalData}
           onClose={() => setShowModal(false)}
           onHide={handleCloseModal}
+        />
+      )}
+
+      {showModal2 && (
+        <CompanyModal
+          onSave={handleSaveModalData2}
+          onClose={() => setShowModal2(false)}
+          onHide={handleCloseModal2}
         />
       )}
 
