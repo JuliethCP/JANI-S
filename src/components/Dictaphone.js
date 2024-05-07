@@ -4,24 +4,20 @@ import axios from 'axios';
 import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
 import './componentCSS/Recorder.css';
 import StrokeModal from "./StrokeModal";
+import CompanyModal from "./CompanyModal";
 
 const Dictaphone = () => {
   const [responseText, setResponseText] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [gender, setGender] = useState('');
-  const [age, setAge] = useState('');
-  const [hypertension, setHypertension] = useState('');
-  const [heart_disease, setHeartDisease] = useState('');
-  const [ever_married, setMarried] = useState('');
-  const [job_type, setJob_type] = useState('');
-  const [residence_type, setResidence_type] = useState('');
-  const [avg_glucose_level, setGlucosa_level] = useState('');
-  const [bmi, setBMI] = useState('');
-  const [smoking_status, setSmoking] = useState('');
-  const [isWaitingResponse, setIsWaitingResponse] = useState(false);
+  const [showModal1, setShowModal1] = useState(false);
+
 
   const handleCloseModal = () => {
     setShowModal(false);
+  };
+
+  const handleCloseModal1 = () => {
+    setShowModal1(false);
   };
 
   const {
@@ -32,6 +28,110 @@ const Dictaphone = () => {
   } = useSpeechRecognition();
 
   useEffect(() => {
+    const processTranscription = async (transcription) => {
+      const words = transcription.toLowerCase().split(' ');
+      let variableName = '';
+      let variableValue = '';
+
+      // Función para convertir el nombre del mes de formato texto a formato numérico
+      const getMonthNumber = (monthWord) => {
+        const monthNames = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+        return monthNames.indexOf(monthWord.toLowerCase()) + 1; // Sumar 1 para obtener el mes en formato numérico
+      };
+
+      for (let i = 0; i < words.length; i++) {
+        if (words[i] === 'house' && i + 6 < words.length) {
+          variableName = 'house';
+          variableValue = {
+            "taxvaluedollarcnt": parseFloat(words[i + 3]),
+            "taxamount": parseFloat(words[i + 6])
+          };
+          break;
+        }
+        if (words[i] === 'auto' && i + 6 < words.length) {
+          variableName = 'auto';
+          variableValue = {
+            "Year": parseFloat(words[i + 3]),
+            "Kms_Driven": parseFloat(words[i + 6])
+          };
+          break;
+        }
+        if (words[i] === 'crimes' && i + 6 < words.length) {
+          variableName = 'crimes';
+          variableValue = {
+            "year": parseFloat(words[i + 3]),
+            "month": parseFloat(words[i + 6])
+          };
+          break;
+        }
+        if (words[i] === 'covid' && i + 6 < words.length) {
+          variableName = 'covid';
+          variableValue = {
+            "Confirmed": parseFloat(words[i + 3]),
+            "Deaths": parseFloat(words[i + 6])
+          };
+          break;
+        }
+        if (words.includes('company')) {
+          setShowModal1(true);
+          break;
+        }
+        if (words.includes('stroke')) {
+          console.log('Se encontró la palabra stroke');
+          setShowModal(true);
+          break;
+        }
+        if (words[i] === 'delay' && i + 1 < words.length) {
+          variableName = 'delay';
+          variableValue = parseInt(words[i + 1]);
+          break;
+        }
+        if (words[i] === 'bitcoin' && i + 3 < words.length) {
+          const year = parseInt(words[i + 1]);
+          const monthWord = words[i + 2];
+          const day = parseInt(words[i + 3]);
+
+          if (!isNaN(year) && !isNaN(day) && !isNaN(getMonthNumber(monthWord)) && !isNaN(Date.parse(`${getMonthNumber(monthWord)} ${day}, ${year}`))) {
+            variableName = 'bitcoin';
+            variableValue = `${year}-${getMonthNumber(monthWord)}-${day}`;
+            break;
+          }
+        }
+        if (words[i] === 'avocado' && i + 3 < words.length) {
+          const year = parseInt(words[i + 1]);
+          const monthWord = words[i + 2];
+          const day = parseInt(words[i + 3]);
+
+          if (!isNaN(year) && !isNaN(day) && !isNaN(getMonthNumber(monthWord)) && !isNaN(Date.parse(`${getMonthNumber(monthWord)} ${day}, ${year}`))) {
+            variableName = 'avocado';
+            variableValue = `${year}-${getMonthNumber(monthWord)}-${day}`;
+            break;
+          }
+        }
+        if (words[i] === 'stock' && i + 3 < words.length) {
+          const year = parseInt(words[i + 1]);
+          const monthWord = words[i + 2];
+          const day = parseInt(words[i + 3]);
+
+          if (!isNaN(year) && !isNaN(day) && !isNaN(getMonthNumber(monthWord)) && !isNaN(Date.parse(`${getMonthNumber(monthWord)} ${day}, ${year}`))) {
+            variableName = 'SP500Stock';
+            variableValue = `${year}-${getMonthNumber(monthWord)}-${day}`;
+            break;
+          }
+        }
+      }
+
+
+      if (variableName === '' || variableValue === '') {
+        console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
+      } else {
+        setResponseText('Please wait a moment...');
+        sendApi(variableName, variableValue);
+      }
+
+    };
+
+
     if (!listening && transcript !== '') {
       processTranscription(transcript);
     }
@@ -42,136 +142,24 @@ const Dictaphone = () => {
   }
 
   const handleSaveModalData = (data) => {
-    setGender(data.gender);
-    setAge(data.age);
-    setHypertension(data.hypertension);
-    setHeartDisease(data.heart_disease);
-    setMarried(data.ever_married);
-    setJob_type(data.job_type);
-    setResidence_type(data.residence_type);
-    setGlucosa_level(data.avg_glucose_level);
-    setBMI(data.bmi);
-    setSmoking(data.smoking_status);
+    console.log('Data:', data);
     setShowModal(false);
+    setResponseText(data);
 
   };
 
-
-  const processTranscription = async (transcription) => {
-    const words = transcription.toLowerCase().split(' ');
-    let variableName = '';
-    let variableValue = '';
-
-    // Función para convertir el nombre del mes de formato texto a formato numérico
-    const getMonthNumber = (monthWord) => {
-      const monthNames = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
-      return monthNames.indexOf(monthWord.toLowerCase()) + 1; // Sumar 1 para obtener el mes en formato numérico
-    };
-
-    for (let i = 0; i < words.length; i++) {
-      if (words[i] === 'house' && i + 6 < words.length) {
-        variableName = 'house';
-        variableValue = {
-          "taxvaluedollarcnt": parseFloat(words[i + 3]),
-          "taxamount": parseFloat(words[i + 6])
-        };
-        break;
-      }
-      if (words[i] === 'stroke' && i + 1 < words.length) {
-        variableName = 'stroke';
-        setShowModal(true);
-        break;
-      }
-      if (words[i] === 'delay' && i + 1 < words.length) {
-        variableName = 'delay';
-        variableValue = parseInt(words[i + 1]);
-        break;
-      }
-      if (words[i] === 'bitcoin' && i + 3 < words.length) {
-        const year = parseInt(words[i + 1]);
-        const monthWord = words[i + 2];
-        const day = parseInt(words[i + 3]);
-
-        if (!isNaN(year) && !isNaN(day) && !isNaN(getMonthNumber(monthWord)) && !isNaN(Date.parse(`${getMonthNumber(monthWord)} ${day}, ${year}`))) {
-          variableName = 'bitcoin';
-          variableValue = `${year}-${getMonthNumber(monthWord)}-${day}`;
-          break;
-        }
-      }
-      if (words[i] === 'avocado' && i + 3 < words.length) {
-        const year = parseInt(words[i + 1]);
-        const monthWord = words[i + 2];
-        const day = parseInt(words[i + 3]);
-
-        if (!isNaN(year) && !isNaN(day) && !isNaN(getMonthNumber(monthWord)) && !isNaN(Date.parse(`${getMonthNumber(monthWord)} ${day}, ${year}`))) {
-          variableName = 'avocado';
-          variableValue = `${year}-${getMonthNumber(monthWord)}-${day}`;
-          break;
-        }
-      }
-      if (words[i] === 'stock' && i + 3 < words.length) {
-        const year = parseInt(words[i + 1]);
-        const monthWord = words[i + 2];
-        const day = parseInt(words[i + 3]);
-
-        if (!isNaN(year) && !isNaN(day) && !isNaN(getMonthNumber(monthWord)) && !isNaN(Date.parse(`${getMonthNumber(monthWord)} ${day}, ${year}`))) {
-          variableName = 'SP500Stock';
-          variableValue = `${year}-${getMonthNumber(monthWord)}-${day}`;
-          break;
-        }
-      }
-    }
-
-
-    if (variableName === 'stroke') {
-      if (showModal) {
-      console.log('Vaaaaaaaaaaaaariable value:', variableValue, 'Variable name:', variableName);
-      await new Promise((resolve) => {
-        const interval = setInterval(() => {
-          if (!showModal) {
-            clearInterval(interval);
-            resolve();
-          }
-        }, 100); // Verificar cada 100ms si el modal está cerrado
-      });
-      variableValue = {
-        "gender": parseFloat(gender),
-        "age": parseFloat(age),
-        "hypertension": parseFloat(hypertension),
-        "heart_disease": parseFloat(heart_disease),
-        "ever_married": parseFloat(ever_married),
-        "work_type": parseFloat(job_type),
-        "Residence_type": parseFloat(residence_type),
-        "avg_glucose_level": parseFloat(avg_glucose_level),
-        "bmi": parseFloat(bmi),
-        "smoking_status": parseFloat(smoking_status)
-      };
-    
-      console.log('Variable value:', variableValue, 'Variable name:', variableName);
-    }
-    
-    if (variableName === '' || Object.keys(variableValue).length === 0) {
-        console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
-      } else {
-        setResponseText('Please wait a moment...');
-        sendApi(variableName, variableValue);
-      }
-    } else {
-      if (variableName === '' || variableValue === '') {
-        console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
-      } else {
-        sendApi(variableName, variableValue);
-      }
-    }
+  const handleSaveModalData1 = (data) => {
+    console.log('Data:', data);
+    setShowModal(false);
+    setResponseText(data);
 
   };
+
 
   const sendApi = async (variable_name, variable_value) => {
     setResponseText('');
 
     try {
-      setIsWaitingResponse(true);
-
       const response = await axios.post('http://127.0.0.1:5000/predict', {
         variable_name: variable_name,
         variable_value: variable_value
@@ -225,6 +213,14 @@ const Dictaphone = () => {
           onSave={handleSaveModalData}
           onClose={() => setShowModal(false)}
           onHide={handleCloseModal}
+        />
+      )}
+
+      {showModal1 && (
+        <CompanyModal
+          onSave={handleSaveModalData1}
+          onClose={() => setShowModal1(false)}
+          onHide={handleCloseModal1}
         />
       )}
 

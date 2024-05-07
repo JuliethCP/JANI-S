@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import { Button, Modal, Form, Container } from 'react-bootstrap';
+import axios from 'axios'; 
 
-function StrokeModal({ onSave, onClose}) {
+function StrokeModal({ onSave, onClose }) {
     const [gender, setGender] = useState('');
     const [age, setAge] = useState('');
     const [hypertension, setHypertension] = useState('');
@@ -14,10 +15,8 @@ function StrokeModal({ onSave, onClose}) {
     const [bmi, setBMI] = useState('');
     const [smoking_status, setSmoking] = useState('');
 
-
-    const handleRegister =  () => {
+    const handleRegister = async () => {
         try {
-            // Verificar si los campos están completos
             if (!gender || !age || !hypertension || !heart_disease || !ever_married ||
                 !job_type || !residence_type || !avg_glucose_level || !bmi || !smoking_status) {
                 Swal.fire({
@@ -28,55 +27,44 @@ function StrokeModal({ onSave, onClose}) {
                 return;
             }
 
-            const formData = {
-                gender,
-                age,
-                hypertension,
-                heart_disease,
-                ever_married,
-                job_type,
-                residence_type,
-                avg_glucose_level,
-                bmi,
-                smoking_status
-            };
-    
-            onSave(formData);
-    
-
-            setGender('');
-            setAge('');
-            setHypertension('');
-            setHeartDisease('');
-            setMarried('');
-            setJob_type('');
-            setResidence_type('');
-            setGlucosa_level('');
-            setBMI('');
-            setSmoking('');
-
-            Swal.fire({
-                icon: "success",
-                title: "Cliente registrado correctamente",
-                text: "El cliente ha sido registrado correctamente.",
-            }).then(() => {
-               
+            // Hacer la llamada al API
+            const response = await axios.post('http://127.0.0.1:5000/predict', {
+                variable_name: 'stroke',
+                variable_value: {
+                    "gender": parseFloat(gender),
+                    "age": parseFloat(age),
+                    "hypertension": parseFloat(hypertension),
+                    "heart_disease": parseFloat(ever_married),
+                    "ever_married": parseFloat(age),
+                    "work_type": parseFloat(job_type),
+                    "Residence_type": parseFloat(residence_type),
+                    "avg_glucose_level": parseFloat(avg_glucose_level),
+                    "bmi": parseFloat(bmi),
+                    "smoking_status": parseFloat(smoking_status)
+                }
             });
 
-            onClose();
-
-
+            if (response.data.stroke_risk) {
+                console.log('Response:', response.data);
+                onClose();
+                onSave(`The stroke risk prediction is ${response.data.stroke_risk} with a probability of ${response.data.probability.toFixed(4)}`);
+            } else {
+                // En caso contrario, mostrar un mensaje genérico
+                const roundedResponse = parseFloat(response.data.prediction).toFixed(4);
+                onClose();
+                onSave(`The prediction for stroke with the provided data is ${roundedResponse}`);
+            }
         } catch (error) {
             console.error("Error saving form:", error);
-
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: "Hubo un error al intentar guardar el formulario.",
+                text: "There was an error while trying to save the form.",
             });
         }
     };
 
+    
     return (
         <Modal
         show={true} onHide={onClose} size="md"
