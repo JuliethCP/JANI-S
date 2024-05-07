@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import { Button, Modal, Form, Container } from 'react-bootstrap';
-import axios from 'axios'; // Importa axios si no lo has hecho aún
+import axios from 'axios'; 
 
 function StrokeModal({ onSave, onClose }) {
     const [gender, setGender] = useState('');
@@ -63,6 +63,8 @@ function StrokeModal({ onSave, onClose }) {
             });
         }
     };
+
+    
     return (
         <Modal
         show={true} onHide={onClose} size="md"
