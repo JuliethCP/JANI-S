@@ -32,6 +32,7 @@ const Dictaphone = () => {
       const words = transcription.toLowerCase().split(' ');
       let variableName = '';
       let variableValue = '';
+      console.log("words", words)
 
       // Función para convertir el nombre del mes de formato texto a formato numérico
       const getMonthNumber = (monthWord) => {
@@ -48,45 +49,86 @@ const Dictaphone = () => {
           };
           break;
         }
-        if (words[i] === 'auto' && i + 6 < words.length) {
-          variableName = 'auto';
-          variableValue = {
-            "Year": parseFloat(words[i + 3]),
-            "Kms_Driven": parseFloat(words[i + 6])
-          };
-          break;
+        if (words[i] === 'automobile') {
+          let yearIndex = -1;
+          let kilometersIndex = -1;
+      
+          // Buscar el índice de 'year' y 'kilometers' después de 'automobile'
+          for (let j = i + 1; j < words.length; j++) {
+            if (words[j] === 'year') {
+              yearIndex = j;
+            } else if (words[j] === 'kilometers') {
+              kilometersIndex = j;
+            }
+          }
+      
+          if (yearIndex !== -1 && kilometersIndex !== -1) {
+            variableName = 'automobile';
+            variableValue = {
+              "year": parseFloat(words[yearIndex + 1]),
+              "kilometers": parseFloat(words[kilometersIndex + 1])
+            };
+            break;
+          }
         }
-        if (words[i] === 'crimes' && i + 6 < words.length) {
-          variableName = 'crimes';
-          variableValue = {
-            "year": parseFloat(words[i + 3]),
-            "month": parseFloat(words[i + 6])
-          };
-          break;
+        if (words[i] === 'crimes') {
+          let yearIndex = -1;
+          let monthIndex = -1;
+      
+          // Buscar el índice de 'year' y 'month' después de 'crimes'
+          for (let j = i + 1; j < words.length; j++) {
+            if (words[j] === 'year') {
+              yearIndex = j;
+            } else if (words[j] === 'month') {
+              monthIndex = j;
+            }
+          }
+      
+          if (yearIndex !== -1 && monthIndex !== -1) {
+            variableName = 'crimes';
+            variableValue = {
+              "year": parseFloat(words[yearIndex + 1]),
+              "month": parseFloat(words[monthIndex + 1])
+            };
+            break;
+          }
+        } else if (words[i] === 'covid') {
+          let confirmedIndex = -1;
+          let deathsIndex = -1;
+      
+          // Buscar el índice de 'confirmed' y 'deaths' después de 'covid'
+          for (let j = i + 1; j < words.length; j++) {
+            if (words[j] === 'confirmed') {
+              confirmedIndex = j;
+            } else if (words[j] === 'deaths') {
+              deathsIndex = j;
+            }
+          }
+      
+          if (confirmedIndex !== -1 && deathsIndex !== -1) {
+            variableName = 'covid';
+            variableValue = {
+              "confirmed": parseFloat(words[confirmedIndex + 1]),
+              "deaths": parseFloat(words[deathsIndex + 1])
+            };
+            break;
+          }
         }
-        if (words[i] === 'covid' && i + 6 < words.length) {
-          variableName = 'covid';
-          variableValue = {
-            "Confirmed": parseFloat(words[i + 3]),
-            "Deaths": parseFloat(words[i + 6])
-          };
-          break;
-        }
-        if (words.includes('company')) {
+        else if (words.includes('company')) {
           setShowModal1(true);
           break;
         }
-        if (words.includes('stroke')) {
+        else if (words.includes('stroke')) {
           console.log('Se encontró la palabra stroke');
           setShowModal(true);
           break;
         }
-        if (words[i] === 'delay' && i + 1 < words.length) {
+        else if (words[i] === 'delay' && i + 1 < words.length) {
           variableName = 'delay';
           variableValue = parseInt(words[i + 1]);
           break;
         }
-        if (words[i] === 'bitcoin' && i + 3 < words.length) {
+        else if (words[i] === 'bitcoin' && i + 3 < words.length) {
           const year = parseInt(words[i + 1]);
           const monthWord = words[i + 2];
           const day = parseInt(words[i + 3]);
@@ -97,7 +139,7 @@ const Dictaphone = () => {
             break;
           }
         }
-        if (words[i] === 'avocado' && i + 3 < words.length) {
+        else if (words[i] === 'avocado' && i + 3 < words.length) {
           const year = parseInt(words[i + 1]);
           const monthWord = words[i + 2];
           const day = parseInt(words[i + 3]);
@@ -108,7 +150,7 @@ const Dictaphone = () => {
             break;
           }
         }
-        if (words[i] === 'stock' && i + 3 < words.length) {
+        else if (words[i] === 'stock' && i + 3 < words.length) {
           const year = parseInt(words[i + 1]);
           const monthWord = words[i + 2];
           const day = parseInt(words[i + 3]);
@@ -119,11 +161,15 @@ const Dictaphone = () => {
             break;
           }
         }
+        else{
+          console.log("No se encontró ninguna variable")
+        }
       }
 
 
-      if (variableName === '' || variableValue === '') {
+      if (variableName === '' || variableValue === '' || Object.keys(variableValue).length === 0) {
         console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
+
       } else {
         setResponseText('Please wait a moment...');
         sendApi(variableName, variableValue);
@@ -173,6 +219,12 @@ const Dictaphone = () => {
         const roundedResponse = parseFloat(response.data.prediction).toFixed(4);
         if (variable_name === 'house') {
           setResponseText(`The prediction for ${variable_name} with the data TaxValueDollarCnt: ${variable_value.taxvaluedollarcnt}, TaxAmount: ${variable_value.taxamount} is ${roundedResponse}`);
+        }else if(variable_name === 'automobile'){
+          setResponseText(`The prediction for ${variable_name} with the data Year: ${variable_value.year}, Kilometers: ${variable_value.kilometers} is ${roundedResponse}`);	
+        }else if(variable_name === 'crimes'){
+          setResponseText(`The prediction for ${variable_name} with the data Year: ${variable_value.year}, Month: ${variable_value.month} is ${roundedResponse}`);
+        }else if(variable_name === 'covid'){
+          setResponseText(`The prediction for ${variable_name} with the data comfirmed: ${variable_value.confirmed}, deaths: ${variable_value.deaths} is ${roundedResponse}`);
         } else {
           setResponseText(`The prediction for ${variable_name} with the data ${variable_value} is ${roundedResponse}`);
         }

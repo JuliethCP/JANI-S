@@ -97,12 +97,12 @@ function App() {
                 </div>
               }
 
-              <h5 className="hoverable" onClick={() => setMovieOpen(!movieOpen)}>MOVIE</h5>
+              <h5 className="hoverable" onClick={() => setMovieOpen(!movieOpen)}>STROKE</h5>
               {movieOpen &&
                 <div>
                   <h6 className="hoverable-data" onClick={() => setMovieOpen(false)}>
                     <hr />
-                    movie - year - month - day <br /> Example: movie, 2023 july 15
+                  Stroke "anything"
                     <hr />
                   </h6>
                 </div>
@@ -113,7 +113,7 @@ function App() {
                 <div>
                   <h6 className="hoverable-data" onClick={() => setCrimesOpen(false)}>
                     <hr />
-                    crimes - year - month - day <br /> Example: crimes, 2025 july 15
+                    crimes - year - month <br /> Example: crimes, year 2025 month 8
                     <hr />
                   </h6>
                 </div>
@@ -135,7 +135,7 @@ function App() {
                 <div>
                   <h6 className="hoverable-data" onClick={() => setCompanyOpen(false)}>
                     <hr />
-                    company - year - month - day <br /> Example: company, 2027 july 15
+                    company "anything"
                     <hr />
                   </h6>
                 </div>
@@ -152,23 +152,23 @@ function App() {
                 </div>
               }
 
-              <h5 className="hoverable" onClick={() => setRecoveredOpen(!recoveredOpen)}>RECOVERED</h5>
+              <h5 className="hoverable" onClick={() => setRecoveredOpen(!recoveredOpen)}>COVID</h5>
               {recoveredOpen &&
                 <div>
                   <h6 className="hoverable-data" onClick={() => setRecoveredOpen(false)}>
                     <hr />
-                    recovered - year - month - day <br /> Example: recovered, 2026 august 22
+                    covid - confirmed - deaths  <br /> Example: covid, confirmed 50 deaths 3
                     <hr />
                   </h6>
                 </div>
               }
 
-              <h5 className="hoverable" onClick={() => setAutomobileOpen(!automobileOpen)}>AUTOMOBILE</h5>
+              <h5 className="hoverable" onClick={() => setAutomobileOpen(!automobileOpen)}>AUTO</h5>
               {automobileOpen &&
                 <div>
                   <h6 className="hoverable-data" onClick={() => setAutomobileOpen(false)}>
                     <hr />
-                    automobile - year - month - day <br /> Example: automobile, 2024 august 22
+                    automobile - year -  kilometers <br /> Example: automobile, year 2015  kilometers 5000
                     <hr />
                   </h6>
                 </div>

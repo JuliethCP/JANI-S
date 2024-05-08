@@ -33,15 +33,14 @@ function CompanyModal({ onSave, onClose }) {
                 }
             });
 
-            if (response.data.stroke_risk) {
-                console.log('Response:', response.data);
+            if (response.data.prediction) {
+                console.log('Response:', response.data.prediction);
                 onClose();
-                onSave(`The stroke risk prediction is ${response.data.stroke_risk} with a probability of ${response.data.probability.toFixed(4)}`);
+                onSave(`The client will change company since its probability exceeds 0.6%: ${response.data.prediction.toFixed(4)}`);
             } else {
-                // En caso contrario, mostrar un mensaje genérico
-                const roundedResponse = parseFloat(response.data.prediction).toFixed(4);
+              
                 onClose();
-                onSave(`The prediction for stroke with the provided data is ${roundedResponse}`);
+               
             }
         } catch (error) {
             console.error("Error saving form:", error);
@@ -87,8 +86,8 @@ function CompanyModal({ onSave, onClose }) {
                     <Form.Group className='my-2'>
                         <Form.Label>Contract</Form.Label>
                         <Form.Control
-                            type="text"
-                            placeholder="Enter contract type"
+                            type="number"
+                            placeholder="Enter contract type  0 for month-to-month, 1 for 1-year, 2 for 5-years"
                             value={contract}
                             onChange={(e) => setContract(e.target.value)}
                             required
@@ -99,7 +98,7 @@ function CompanyModal({ onSave, onClose }) {
                         <Form.Label>Internet Service</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Enter internet service type"
+                            placeholder="Enter internet service type  0 for optical fiber 1 for coaxial 2 "
                             value={internetService}
                             onChange={(e) => setInternetService(e.target.value)}
                             required
@@ -110,7 +109,7 @@ function CompanyModal({ onSave, onClose }) {
                         <Form.Label>Tech Support</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Enter tech support availability"
+                            placeholder="Enter tech support availability  how many times you call the services"
                             value={techSupport}
                             onChange={(e) => setTechSupport(e.target.value)}
                             required
