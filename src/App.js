@@ -206,8 +206,7 @@ function App() {
               maxWidth: '430px',
               marginRight: '0', // Añadido para alinear a la derecha
             }}>   
-              <AgeComponent />
-              <EmotionBarsComponent />
+             RESULTTT
              
 
             </Container>
