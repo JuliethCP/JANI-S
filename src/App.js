@@ -53,7 +53,7 @@ function App() {
         const response = await axios.post("http://127.0.0.1:5000/emotion", {
           image: image
         });
-        setResponseText(`The emotion used is: ${response.data.emotion}`);
+        setResponseText(`The current emotion is: ${response.data.emotion}`);
       } catch (error) {
         console.error("Error sending image to API: ", error);
       }
@@ -224,7 +224,7 @@ function App() {
                     border: "2px solid #bfbfbf",
                     borderRadius: "8px",
                     boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
-                    maxWidth: "55%",
+                    maxWidth: "85%",
                     position: "absolute",
                     top: "0",
                     right: "0"
@@ -243,7 +243,8 @@ function App() {
               maxWidth: '430px',
               marginRight: '0', // Añadido para alinear a la derecha
             }}>
-              RESULTTT
+
+             {responseText && <p>JANI'S:  {responseText}</p>}
 
 
             </Container>
