@@ -167,7 +167,8 @@ const Dictaphone = () => {
       }
 
 
-      if (variableName === '' || variableValue === '' || Object.keys(variableValue).length === 0) {
+      if (variableName === '' || variableValue === '' ) {
+        console.log(variableName, variableValue, Object.keys(variableValue).length)
         console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
 
       } else {
