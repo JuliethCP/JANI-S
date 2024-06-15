@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useExternalScript } from "./helpers/ai-sdk/externalScriptsLoader";
-import { getAiSdkControls } from "./helpers/ai-sdk/loader";
 import './App.css';
 import { Container, Col, Stack } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -19,6 +17,7 @@ function App() {
   const [crimesOpen, setCrimesOpen] = useState(false);
   const [recoveredOpen, setRecoveredOpen] = useState(false);
   const [companyOpen, setCompanyOpen] = useState(false);
+  const [weaponsOpen, setWeaponsOpen] = useState(false);
   const videoEl = useRef(null);
 
 
@@ -207,6 +206,17 @@ function App() {
                 </div>
               }
 
+              <h5 className="hoverable" onClick={() => setWeaponsOpen(!weaponsOpen)}>WEAPONS</h5>
+              {weaponsOpen &&
+                <div>
+                  <h6 className="hoverable-data" onClick={() => setWeaponsOpen(false)}>
+                    <hr />
+                    weapons "anything"
+                    <hr />
+                  </h6>
+                </div>
+              }
+
             </Container>
           </Col>
 
@@ -244,7 +254,7 @@ function App() {
               marginRight: '0', // Añadido para alinear a la derecha
             }}>
 
-             {responseText && <p>JANI'S:  {responseText}</p>}
+              {responseText && <p>JANI'S:  {responseText}</p>}
 
 
             </Container>

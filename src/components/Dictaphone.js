@@ -5,11 +5,13 @@ import { VscDebugStart, VscDebugPause, VscDebugRestart } from 'react-icons/vsc';
 import './componentCSS/Recorder.css';
 import StrokeModal from "./StrokeModal";
 import CompanyModal from "./CompanyModal";
+import WeaponsModal from "./WeaponsModal";
 
 const Dictaphone = () => {
   const [responseText, setResponseText] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showModal1, setShowModal1] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
 
 
   const handleCloseModal = () => {
@@ -18,6 +20,11 @@ const Dictaphone = () => {
 
   const handleCloseModal1 = () => {
     setShowModal1(false);
+  };
+
+  
+  const handleCloseModal2 = () => {
+    setShowModal2(false);
   };
 
   const {
@@ -52,7 +59,7 @@ const Dictaphone = () => {
         if (words[i] === 'automobile') {
           let yearIndex = -1;
           let kilometersIndex = -1;
-      
+
           // Buscar el índice de 'year' y 'kilometers' después de 'automobile'
           for (let j = i + 1; j < words.length; j++) {
             if (words[j] === 'year') {
@@ -61,7 +68,7 @@ const Dictaphone = () => {
               kilometersIndex = j;
             }
           }
-      
+
           if (yearIndex !== -1 && kilometersIndex !== -1) {
             variableName = 'automobile';
             variableValue = {
@@ -74,7 +81,7 @@ const Dictaphone = () => {
         if (words[i] === 'crimes') {
           let yearIndex = -1;
           let monthIndex = -1;
-      
+
           // Buscar el índice de 'year' y 'month' después de 'crimes'
           for (let j = i + 1; j < words.length; j++) {
             if (words[j] === 'year') {
@@ -83,7 +90,7 @@ const Dictaphone = () => {
               monthIndex = j;
             }
           }
-      
+
           if (yearIndex !== -1 && monthIndex !== -1) {
             variableName = 'crimes';
             variableValue = {
@@ -95,7 +102,7 @@ const Dictaphone = () => {
         } else if (words[i] === 'covid') {
           let confirmedIndex = -1;
           let deathsIndex = -1;
-      
+
           // Buscar el índice de 'confirmed' y 'deaths' después de 'covid'
           for (let j = i + 1; j < words.length; j++) {
             if (words[j] === 'confirmed') {
@@ -104,7 +111,7 @@ const Dictaphone = () => {
               deathsIndex = j;
             }
           }
-      
+
           if (confirmedIndex !== -1 && deathsIndex !== -1) {
             variableName = 'covid';
             variableValue = {
@@ -121,6 +128,10 @@ const Dictaphone = () => {
         else if (words.includes('stroke')) {
           console.log('Se encontró la palabra stroke');
           setShowModal(true);
+          break;
+        }
+        else if (words.includes('weapons')) {
+          setShowModal2(true);
           break;
         }
         else if (words[i] === 'delay' && i + 1 < words.length) {
@@ -161,13 +172,13 @@ const Dictaphone = () => {
             break;
           }
         }
-        else{
+        else {
           console.log("No se encontró ninguna variable")
         }
       }
 
 
-      if (variableName === '' || variableValue === '' ) {
+      if (variableName === '' || variableValue === '') {
         console.log(variableName, variableValue, Object.keys(variableValue).length)
         console.log('No se encontró el nombre de la variable y su valor en la transcripción.');
 
@@ -220,11 +231,11 @@ const Dictaphone = () => {
         const roundedResponse = parseFloat(response.data.prediction).toFixed(4);
         if (variable_name === 'house') {
           setResponseText(`The prediction for ${variable_name} with the data TaxValueDollarCnt: ${variable_value.taxvaluedollarcnt}, TaxAmount: ${variable_value.taxamount} is ${roundedResponse}`);
-        }else if(variable_name === 'automobile'){
-          setResponseText(`The prediction for ${variable_name} with the data Year: ${variable_value.year}, Kilometers: ${variable_value.kilometers} is ${roundedResponse}`);	
-        }else if(variable_name === 'crimes'){
+        } else if (variable_name === 'automobile') {
+          setResponseText(`The prediction for ${variable_name} with the data Year: ${variable_value.year}, Kilometers: ${variable_value.kilometers} is ${roundedResponse}`);
+        } else if (variable_name === 'crimes') {
           setResponseText(`The prediction for ${variable_name} with the data Year: ${variable_value.year}, Month: ${variable_value.month} is ${roundedResponse}`);
-        }else if(variable_name === 'covid'){
+        } else if (variable_name === 'covid') {
           setResponseText(`The prediction for ${variable_name} with the data comfirmed: ${variable_value.confirmed}, deaths: ${variable_value.deaths} is ${roundedResponse}`);
         } else {
           setResponseText(`The prediction for ${variable_name} with the data ${variable_value} is ${roundedResponse}`);
@@ -274,6 +285,13 @@ const Dictaphone = () => {
           onSave={handleSaveModalData1}
           onClose={() => setShowModal1(false)}
           onHide={handleCloseModal1}
+        />
+      )}
+
+      {showModal2 && (
+        <WeaponsModal
+          onClose={() => setShowModal2(false)}
+          onHide={handleCloseModal2}
         />
       )}
 
