@@ -23,8 +23,9 @@ Para probar JANI-S en tu propio entorno, sigue estos pasos:
 1. Clona este repositorio en tu máquina local.
 2. Instala las dependencias necesarias para el frontend y el backend.
 3. Ejecuta el servidor backend.
-4. Inicia la aplicación frontend.
-5. ¡Disfruta de la experiencia de JANI-S!
+   [Repositorio API REST JANI-S](https://github.com/JuliethCP/API-REST-JANI-S)
+5. Inicia la aplicación frontend.
+6. ¡Disfruta de la experiencia de JANI-S!
 
 ## Equipo
 
